@@ -43,5 +43,5 @@ endfunction
 
 augroup RepoFileSearch
     autocmd!
-    autocmd BufEnter * call <SID>check_for_repo()
+    autocmd BufReadPost * call <SID>check_for_repo()
 augroup END
