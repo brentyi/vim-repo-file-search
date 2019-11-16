@@ -24,21 +24,21 @@ function! s:run_and_add_to_path(command)
     endif
 
     " Exit if path has already been added
-    if &path =~ s:repo_path
+    if &path =~ ',' . s:repo_path . '\(/\*\*9\)'
         return
     endif
 
     " We made it :)
-    let &path .= "," . s:repo_path . "/**9"
+    let &path .= ',' . s:repo_path . '/**9'
 endfunction
 
 " Function to call every time we open a file
 function! s:check_for_repo()
     "" Git
-    call <SID>run_and_add_to_path("git rev-parse --show-toplevel")
+    call <SID>run_and_add_to_path('git rev-parse --show-toplevel')
 
     "" Mercurial
-    call <SID>run_and_add_to_path("hg root")
+    call <SID>run_and_add_to_path('hg root')
 endfunction
 
 augroup RepoFileSearch
