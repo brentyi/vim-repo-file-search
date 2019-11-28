@@ -50,4 +50,8 @@ endfunction
 augroup RepoFileSearch
     autocmd!
     autocmd BufReadPost * call <SID>check_for_repo()
+
+    " The first buffer is loaded before our working directory is updated, so
+    " we need to call check_for_repo() again
+    autocmd VimEnter * call <SID>check_for_repo()
 augroup END
