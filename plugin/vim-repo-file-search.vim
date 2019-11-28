@@ -23,6 +23,9 @@ function! s:run_and_add_to_path(command)
         return
     endif
 
+    " Set buffer repo root path
+    let b:vim_repo_file_search_repo_root = s:repo_path
+
     " Exit if path has already been added
     if &path =~ ',' . s:repo_path . '\(/\*\*9\)'
         return
@@ -30,12 +33,11 @@ function! s:run_and_add_to_path(command)
 
     " We made it :)
     let &path .= ',' . s:repo_path . '/**9'
-    let w:vim_repo_file_search_repo_root = s:repo_path
 endfunction
 
 " Function to call every time we open a file
 function! s:check_for_repo()
-    let w:vim_repo_file_search_repo_root = "."
+    let b:vim_repo_file_search_repo_root = "."
 
     "" Subversion
     call <SID>run_and_add_to_path('svn info --show-item wc-root')
