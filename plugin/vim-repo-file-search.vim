@@ -40,20 +40,23 @@ function! s:check_for_repo()
     let b:vim_repo_file_search_repo_root = "."
 
     "" Subversion
-    call <SID>run_and_add_to_path('svn info --show-item wc-root')
+    call s:run_and_add_to_path('svn info --show-item wc-root')
 
     "" Mercurial
-    call <SID>run_and_add_to_path('hg root')
+    call s:run_and_add_to_path('hg root')
 
     "" Git
-    call <SID>run_and_add_to_path('git rev-parse --show-toplevel')
+    call s:run_and_add_to_path('git rev-parse --show-toplevel')
 endfunction
 
 augroup RepoFileSearch
     autocmd!
-    autocmd BufReadPost * call <SID>check_for_repo()
+    autocmd BufReadPost * call s:check_for_repo()
 
     " The first buffer is loaded before our working directory is updated, so
     " we need to call check_for_repo() again
-    autocmd VimEnter * call <SID>check_for_repo()
+    autocmd VimEnter * call s:check_for_repo()
+
+    " Also run in NERDTree windows
+    autocmd FileType nerdtree call s:check_for_repo()
 augroup END
