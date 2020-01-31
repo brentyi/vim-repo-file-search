@@ -10,6 +10,9 @@
 augroup RepoFileSearch
     autocmd!
 
+    " Search for repo when vim is opened
+    autocmd VimEnter * call s:check_for_repo_delayed()
+
     " Search for repo after new file is opened
     autocmd BufReadPost * call s:check_for_repo_delayed()
 
