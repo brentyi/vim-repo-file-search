@@ -7,6 +7,35 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+augroup RepoFileSearch
+    autocmd!
+
+    " Search for repo after new file is opened
+    autocmd BufReadPost * call s:check_for_repo_delayed()
+
+    " Also run in NERDTree windows
+    autocmd FileType nerdtree call s:check_for_repo_delayed()
+augroup END
+
+" Check if our current path lives in an svn/hg/git repository
+" Add a delay for robustness
+function! s:check_for_repo_delayed()
+    call timer_start(5, function('s:check_for_repo'))
+endfunction
+
+function! s:check_for_repo(__unused_timer__)
+    let b:vim_repo_file_search_repo_root = "."
+
+    "" Subversion
+    call s:run_and_add_to_path('svn info --show-item wc-root')
+
+    "" Mercurial
+    call s:run_and_add_to_path('hg root')
+
+    "" Git
+    call s:run_and_add_to_path('git rev-parse --show-toplevel')
+endfunction
+
 " Helper for running a 'repo locate' shell command and adding its output to
 " &path if it's a valid & unique directory
 function! s:run_and_add_to_path(command)
@@ -35,32 +64,3 @@ function! s:run_and_add_to_path(command)
     let &path .= ',' . s:repo_path . '/**9'
 endfunction
 
-" Function to call every time we open a file
-function! s:check_for_repo(__unused_timer__)
-    let b:vim_repo_file_search_repo_root = "."
-
-    "" Subversion
-    call s:run_and_add_to_path('svn info --show-item wc-root')
-
-    "" Mercurial
-    call s:run_and_add_to_path('hg root')
-
-    "" Git
-    call s:run_and_add_to_path('git rev-parse --show-toplevel')
-endfunction
-
-augroup RepoFileSearch
-    autocmd!
-
-    " Search for repo after new file is opened
-    autocmd BufReadPost * call s:check_for_repo(0)
-
-    " The first buffer is loaded before our working directory is updated, so
-    " we need to call check_for_repo() again
-    "
-    " This is called with a delay to prevent some artifacts from system()
-    autocmd VimEnter * call timer_start(100, function('s:check_for_repo'))
-
-    " Also run in NERDTree windows
-    autocmd FileType nerdtree call s:check_for_repo(0)
-augroup END
