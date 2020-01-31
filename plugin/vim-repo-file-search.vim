@@ -11,19 +11,20 @@ augroup RepoFileSearch
     autocmd!
 
     " Search for repo when vim is opened
-    autocmd VimEnter * call s:check_for_repo_delayed()
+    " This is called with a longer delay to prevent some display artifacts
+    autocmd VimEnter * call s:check_for_repo_delayed(200)
 
     " Search for repo after new file is opened
-    autocmd BufReadPost * call s:check_for_repo_delayed()
+    autocmd BufReadPost * call s:check_for_repo(0)
 
     " Also run in NERDTree windows
-    autocmd FileType nerdtree call s:check_for_repo_delayed()
+    autocmd FileType nerdtree call s:check_for_repo(0)
 augroup END
 
 " Check if our current path lives in an svn/hg/git repository
 " Add a delay for robustness
-function! s:check_for_repo_delayed()
-    call timer_start(5, function('s:check_for_repo'))
+function! s:check_for_repo_delayed(time)
+    call timer_start(a:time, function('s:check_for_repo'))
 endfunction
 
 function! s:check_for_repo(__unused_timer__)
