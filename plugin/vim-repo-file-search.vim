@@ -15,7 +15,9 @@ augroup RepoFileSearch
     autocmd VimEnter * call s:check_for_repo_delayed(200)
 
     " Search for repo after new file is opened
+    " (Hacky) Makes a redundant, 0-delay call to fix issues with fzf... :(
     autocmd BufReadPost * call s:check_for_repo(0)
+    autocmd BufReadPost * call s:check_for_repo_delayed(0)
 
     " Also run in NERDTree windows
     autocmd FileType nerdtree call s:check_for_repo(0)
@@ -28,6 +30,11 @@ function! s:check_for_repo_delayed(time)
 endfunction
 
 function! s:check_for_repo(__unused_timer__)
+    " Do nothing if we've already found a repo
+    if get(b:, 'vim_repo_file_search_repo_root', ".") != "."
+        return
+    endif
+
     let b:vim_repo_file_search_repo_root = "."
 
     "" Subversion
