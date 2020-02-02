@@ -12,8 +12,8 @@ Plug 'brentyi/vim-repo-file-search'
 ---
 
 We also set two variables in the buffer scope:
-- `b:vim_repo_file_search_repo_root`: Root of the repository that the current file is in. Defaults to `.`.
-- `b:vim_repo_file_search_repo_type`: `git`, `hg`, `svn`, or `none`. Identifies the current repository's type.
+- `b:repo_file_search_root`: Root of the repository that the current file is in. Defaults to `.`.
+- `b:repo_file_search_type`: `git`, `hg`, `svn`, or `none`. Identifies the current repository's type.
 
 Example application: we can ask `fzf` to emulate the behavior of `ctrlp`.
 ```
@@ -22,7 +22,7 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
 function! s:smarter_fuzzy_file_search()
-    execute "Files " . b:vim_repo_file_search_repo_root
+    execute "Files " . b:repo_file_search_root
 endfunction
 nnoremap <C-P> :call <SID>smarter_fuzzy_file_search()<CR>
 ```
