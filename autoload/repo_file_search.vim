@@ -5,11 +5,6 @@ function! repo_file_search#check_for_repo_delayed(time)
 endfunction
 
 function! repo_file_search#check_for_repo(__unused_timer__)
-    " Do nothing if we've already found a repo
-    if get(b:, 'repo_file_search_type', 'none') != 'none'
-        return
-    endif
-
     let b:repo_file_search_root = '.'
     let b:repo_file_search_type = 'none'
 
