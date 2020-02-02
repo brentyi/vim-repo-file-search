@@ -11,9 +11,11 @@ Plug 'brentyi/vim-repo-file-search'
 
 ---
 
-We also set the `b:vim_repo_file_search_repo_root` variable to a single path (default: `.`), which can be handy as a general search path.
+We also set two variables in the buffer scope:
+- `b:vim_repo_file_search_repo_root`: Root of the repository that the current file is in. Defaults to `.`.
+- `b:vim_repo_file_search_repo_type`: `git`, `hg`, `svn`, or `none`. Identifies the current repository's type.
 
-For example, we can ask `fzf` to emulate the behavior of `ctrlp`:
+Example application: we can ask `fzf` to emulate the behavior of `ctrlp`.
 ```
 Plug 'brentyi/vim-repo-file-search'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
