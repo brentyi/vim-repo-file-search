@@ -11,13 +11,12 @@ augroup RepoFileSearch
     autocmd!
 
     " Search for repo when vim is opened
-    " This is called with a longer delay to prevent some display artifacts
-    autocmd VimEnter * call repo_file_search#check_for_repo_delayed(200)
+    " Called with a delay to prevent some display artifacts :(
+    autocmd VimEnter * call repo_file_search#check_for_repo_delayed(100)
 
     " Search for repo after new file is opened
-    " (Hacky) Makes a redundant, 0-delay call to fix issues with fzf... :(
-    autocmd BufReadPost * call repo_file_search#check_for_repo(0)
-    autocmd BufReadPost * call repo_file_search#check_for_repo_delayed(0)
+    " Called with a delay to prevent some display artifacts :(
+    autocmd BufReadPost * call repo_file_search#check_for_repo_delayed(100)
 
     " Also run in NERDTree windows
     autocmd FileType nerdtree call repo_file_search#check_for_repo(0)
