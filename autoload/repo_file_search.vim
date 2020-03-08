@@ -12,7 +12,7 @@ function! repo_file_search#check_for_repo(__unused_timer__)
     call s:run_and_add_to_path('svn', 'svn info --show-item wc-root')
 
     " Mercurial
-    call s:run_and_add_to_path("hg", 'hg root')
+    call s:run_and_add_to_path('hg', 'hg root')
 
     " Git
     call s:run_and_add_to_path('git', 'git rev-parse --show-toplevel')
@@ -54,10 +54,10 @@ endfunction
 " assigning b:repo_file_search_display to it
 function! s:update_display()
     " Get a full path to the current file
-    let l:full_path = expand("%:p")
+    let l:full_path = expand('%:p')
 
     " Chop off the filename
-    let l:full_path = l:full_path[:-len(expand("%:t")) - 2]
+    let l:full_path = l:full_path[:-len(expand('%:t')) - 2]
 
     " Generate path to our file relative to our repository root
     let l:repo_path = l:full_path
@@ -66,14 +66,14 @@ function! s:update_display()
         " Generate a path relative to our repository root's parent
         let l:repo_head = fnamemodify(fnamemodify(l:repo_root, ':h'), ':h')
         if l:full_path[:len(l:repo_head)-1] ==# l:repo_head
-            let l:repo_path = ".../" . l:full_path[len(l:repo_head) + 1:]
+            let l:repo_path = '.../' . l:full_path[len(l:repo_head) + 1:]
         endif
     endif
 
     " Generate a path relative to our home directory
     let l:home_path = l:full_path
     if l:full_path[:len($HOME)-1] ==# $HOME
-        let l:home_path = "~" . l:full_path[len($HOME):]
+        let l:home_path = '~' . l:full_path[len($HOME):]
     endif
 
     " Return shorter option
