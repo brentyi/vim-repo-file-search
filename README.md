@@ -11,9 +11,10 @@ Plug 'brentyi/vim-repo-file-search'
 
 ---
 
-We also set two variables in the buffer scope:
+We also set some variables in the buffer scope:
 - `b:repo_file_search_root`: Root of the repository that the current file is in. Defaults to `.`.
 - `b:repo_file_search_type`: `git`, `hg`, `svn`, or `none`. Identifies the current repository's type.
+- `b:repo_file_search_display`: Human-readable path to current file, generated intelligently based on repository root & home directory.
 
 Example application: we can ask `fzf` to emulate the behavior of `ctrlp`.
 ```
