@@ -22,15 +22,46 @@ endfunction
 " - b:repo_file_search_type
 " - b:repo_file_search_display
 function! s:run_and_add_to_path(type, command)
-    let l:Callback = function("s:repo_root_callback", [a:type])
-    call job_start(a:command, {'out_cb': l:Callback})
+    if exists('*job_start')
+        " Vim 8
+        let l:Callback = function('s:repo_root_callback', [a:type])
+        call job_start(a:command, {'out_cb': l:Callback})
+    elseif exists('*jobstart')
+        " Neovim
+        let l:Callback = function('s:repo_root_callback', [a:type])
+        call jobstart(a:command, {'on_stdout': l:Callback})
+    else
+        " Synchronous fallback
+        let l:result = system(a:command)
+        if v:shell_error != 0
+            " Command failed!
+            return
+        endif
+        call s:repo_root_callback(a:type, 'unused', l:result)
+    endif
 endfunction
 
 " 'Repo locate' shell command callback: adds outputs to &path if they're valid
 " and unique
-function s:repo_root_callback(type, channel, msg) abort
+function s:repo_root_callback(type, ...) abort
+    " First, we do some hacky stuff to pull data from stdout
+    "
+    " If called from job_start (Vim 8), the arguments will look like:
+    "   (channel, data)
+    " If called from jobstart (Neovim), the arguments will look like:
+    "   (job_id, data, event)
+    " ...in either case, the data we care about is the second (optional) argument
+    let l:message = get(a:, 2)
+
+    " jobstart returns the output as a list of lines; we only care about the
+    " first one
+    " (job_start returns a string directly)
+    if type(l:message) == type([])
+        let l:message = l:message[0]
+    endif
+
     " Run command & strip out control sequences (\r, \n, etc)
-    let l:repo_path=substitute(a:msg, '[[:cntrl:]]', '', 'g')
+    let l:repo_path=substitute(l:message, '[[:cntrl:]]', '', 'g')
 
     " Exit if output is not a valid path
     if l:repo_path !~? '^/\([A-z0-9-_+./]\)\+$'
