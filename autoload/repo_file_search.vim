@@ -1,10 +1,5 @@
 " Check if our current path lives in an svn/hg/git repository
-" Add a delay for robustness
-function! repo_file_search#check_for_repo_delayed(time)
-    call timer_start(a:time, function('repo_file_search#check_for_repo'))
-endfunction
-
-function! repo_file_search#check_for_repo(__unused_timer__)
+function! repo_file_search#check_for_repo()
     let b:repo_file_search_root = '.'
     let b:repo_file_search_type = 'none'
 
@@ -21,33 +16,41 @@ function! repo_file_search#check_for_repo(__unused_timer__)
     call s:update_display()
 endfunction
 
-" Helper for running a 'repo locate' shell command and adding its output to
-" &path if it's a valid & unique directory
+" Asynchronously call the provided command, and then update:
+" - &path
+" - b:repo_file_search_root
+" - b:repo_file_search_type
+" - b:repo_file_search_display
 function! s:run_and_add_to_path(type, command)
-    " Run command & strip out control sequences (\r, \n, etc)
-    let s:repo_path=substitute(system(a:command), '[[:cntrl:]]', '', 'g')
+    let l:Callback = function("s:repo_root_callback", [a:type])
+    call job_start(a:command, {'out_cb': l:Callback})
+endfunction
 
-    " Exit if shell command failed
-    if v:shell_error > 0
-        return
-    endif
+" 'Repo locate' shell command callback: adds outputs to &path if they're valid
+" and unique
+function s:repo_root_callback(type, channel, msg) abort
+    " Run command & strip out control sequences (\r, \n, etc)
+    let l:repo_path=substitute(a:msg, '[[:cntrl:]]', '', 'g')
 
     " Exit if output is not a valid path
-    if s:repo_path !~? '^/\([A-z0-9-_+./]\)\+$'
+    if l:repo_path !~? '^/\([A-z0-9-_+./]\)\+$'
         return
     endif
 
     " Set buffer repo root path
-    let b:repo_file_search_root = s:repo_path
+    let b:repo_file_search_root = l:repo_path
     let b:repo_file_search_type = a:type
 
     " Exit if path has already been added
-    if &path =~ ',' . s:repo_path . '\(/\*\*9\)'
+    if &path =~ ',' . l:repo_path . '\(/\*\*9\)'
         return
     endif
 
     " We made it :)
-    let &path .= ',' . s:repo_path . '/**9'
+    let &path .= ',' . l:repo_path . '/**9'
+
+    " Update statusline variable
+    call s:update_display()
 endfunction
 
 " Helper for generating a human-readable 'path to current file' value, and
