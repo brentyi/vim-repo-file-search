@@ -72,13 +72,10 @@ function s:repo_root_callback(type, ...) abort
     let b:repo_file_search_root = l:repo_path
     let b:repo_file_search_type = a:type
 
-    " Exit if path has already been added
-    if &path =~ ',' . l:repo_path . '\(/\*\*9\)'
-        return
+    " Update path if new
+    if &path !~ ',' . l:repo_path . '\(/\*\*9\)'
+        let &path .= ',' . l:repo_path . '/**9'
     endif
-
-    " We made it :)
-    let &path .= ',' . l:repo_path . '/**9'
 
     " Update statusline variable
     call s:update_display()
