@@ -1,16 +1,27 @@
 " Check if our current path lives in an svn/hg/git repository
 function! repo_file_search#check_for_repo()
-    let b:repo_file_search_root = '.'
-    let b:repo_file_search_type = 'none'
+    let b:repo_file_search_root = get(g:, 'repo_file_search_root', '')
+    let b:repo_file_search_type = get(g:, 'repo_file_search_type', 'none')
 
     " Subversion
-    call s:run_and_add_to_path('svn', 'svn info --show-item wc-root')
+    if len(b:repo_file_search_root) == 0
+        call s:run_and_add_to_path('svn', 'svn info --show-item wc-root')
+    endif
 
     " Mercurial
-    call s:run_and_add_to_path('hg', 'hg root')
+    if len(b:repo_file_search_root) == 0
+        call s:run_and_add_to_path('hg', 'hg root')
+    endif
 
     " Git
-    call s:run_and_add_to_path('git', 'git rev-parse --show-toplevel')
+    if len(b:repo_file_search_root) == 0
+        call s:run_and_add_to_path('git', 'git rev-parse --show-toplevel')
+    endif
+
+    " Default
+    if len(b:repo_file_search_root) == 0
+        let b:repo_file_search_root = '.'
+    endif
 
     " Update statusline variable
     call s:update_display()
