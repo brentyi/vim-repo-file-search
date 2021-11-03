@@ -11,5 +11,5 @@ augroup RepoFileSearch
     autocmd!
 
     " Search for repo whenever a new buffer is opened
-    autocmd BufEnter * call repo_file_search#check_for_repo()
+    autocmd BufWinEnter * call repo_file_search#check_for_repo()
 augroup END
