@@ -39,8 +39,10 @@ function! s:run_and_add_to_path(type, command)
         call job_start(a:command, {'out_cb': l:Callback})
     elseif exists('*jobstart')
         " Neovim
+        " Note that we explicitly pass in the CWD here, which is seemingly not
+        " necessary for Vim 8
         let l:Callback = function('s:repo_root_callback', [a:type])
-        call jobstart(a:command, {'on_stdout': l:Callback})
+        call jobstart(a:command, {'on_stdout': l:Callback, 'cwd': expand('%:p:h')})
     else
         " Synchronous fallback
         let l:result = system(a:command)
