@@ -35,20 +35,20 @@ endfunction
 function! s:run_and_add_to_path(type, command)
     if exists('*job_start')
         " Vim 8
-        let l:Callback = function('s:repo_root_callback', [a:type])
-        call job_start(a:command, {'out_cb': l:Callback})
+        let l:callback = function('s:repo_root_callback', [a:type])
+        call job_start(a:command, {'out_cb': l:callback})
     elseif exists('*jobstart')
         " Neovim
         " Note that we explicitly pass in the CWD here, which is seemingly not
         " necessary for Vim 8
-        let l:Callback = function('s:repo_root_callback', [a:type])
-        " avoid expanding the cwd when the path is not valid  (e.g. fugative://...)
-        if isdirectory(expand('%:p:h'))
-            call jobstart(a:command, {'on_stdout': l:Callback, 'cwd': expand('%:p:h')})
-        else
-            call jobstart(a:command, {'on_stdout': l:Callback})
-        endif
+        let l:callback = function('s:repo_root_callback', [a:type])
 
+        " Avoid expanding the cwd when the path is not valid  (e.g. fugitive://...)
+        if isdirectory(expand('%:p:h'))
+            call jobstart(a:command, {'on_stdout': l:callback, 'cwd': expand('%:p:h')})
+        else
+            call jobstart(a:command, {'on_stdout': l:callback})
+        endif
     else
         " Synchronous fallback
         let l:result = system(a:command)
