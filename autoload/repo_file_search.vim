@@ -33,18 +33,19 @@ endfunction
 " - b:repo_file_search_type
 " - b:repo_file_search_display
 function! s:run_and_add_to_path(type, command)
-    let l:callback = function('s:repo_root_callback', [a:type])
+    " Funcrefs must be capitalized
+    let l:Callback = function('s:repo_root_callback', [a:type])
     if exists('*job_start')
         " Vim 8
-        call job_start(a:command, {'out_cb': l:callback})
+        call job_start(a:command, {'out_cb': l:Callback})
     elseif exists('*jobstart')
         " Neovim
         " Explicitly pass in the cwd when the path is valid  (e.g. not fugitive://...)
         " This is seemingly not necessary for Vim 8
         if isdirectory(expand('%:p:h'))
-            call jobstart(a:command, {'on_stdout': l:callback, 'cwd': expand('%:p:h')})
+            call jobstart(a:command, {'on_stdout': l:Callback, 'cwd': expand('%:p:h')})
         else
-            call jobstart(a:command, {'on_stdout': l:callback})
+            call jobstart(a:command, {'on_stdout': l:Callback})
         endif
     else
         " Synchronous fallback
